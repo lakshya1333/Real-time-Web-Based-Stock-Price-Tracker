@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Stock Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Real-Time Stock Tracker</h1>
+            <div id="status" class="status disconnected">Disconnected</div>
+        </header>
+        
+        <main>
+            <div class="chart-container">
+                <canvas id="stockChart"></canvas>
+            </div>
+            
+            <div class="log-container">
+                <h3>Connection Logs</h3>
+                <ul id="logList"></ul>
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
