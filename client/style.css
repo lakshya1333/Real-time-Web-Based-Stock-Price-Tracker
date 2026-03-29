@@ -31,6 +31,39 @@ header {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
+.add-stock-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.add-stock-form input {
+    background: #2a2a2a;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: inherit;
+    outline: none;
+    text-transform: uppercase;
+}
+.add-stock-form input:focus {
+    border-color: var(--accent-color);
+}
+.add-stock-form button {
+    background: var(--accent-color);
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s;
+}
+.add-stock-form button:hover {
+    opacity: 0.8;
+}
+
 h1 {
     margin: 0;
     font-size: 24px;

@@ -11,6 +11,10 @@
     <div class="container">
         <header>
             <h1>Real-Time Stock Tracker</h1>
+            <div class="add-stock-form">
+                <input type="text" id="newSymbol" placeholder="Enter stock symbol (e.g. AAPL)">
+                <button onclick="subscribeStock()">Track</button>
+            </div>
             <div id="status" class="status disconnected">Disconnected</div>
         </header>
         

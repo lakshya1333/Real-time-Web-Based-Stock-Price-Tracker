@@ -4,14 +4,32 @@ let chart = null;
 const maxDataPoints = 50;
 let datasets = {};
 
-// Colors for different stocks
-const colors = {
-    'AAPL': 'rgb(255, 99, 132)',
-    'GOOGL': 'rgb(54, 162, 235)',
-    'MSFT': 'rgb(75, 192, 192)',
-    'AMZN': 'rgb(255, 159, 64)',
-    'TSLA': 'rgb(153, 102, 255)'
-};
+const colors = {};
+
+function getColorForSymbol(symbol) {
+    if (!colors[symbol]) {
+        const r = Math.floor(Math.random() * 155 + 100);
+        const g = Math.floor(Math.random() * 155 + 100);
+        const b = Math.floor(Math.random() * 155 + 100);
+        colors[symbol] = `rgb(${r}, ${g}, ${b})`;
+    }
+    return colors[symbol];
+}
+
+function subscribeStock() {
+    const symInput = document.getElementById('newSymbol');
+    let symbol = symInput.value.trim().toUpperCase();
+    if (!symbol) return;
+    
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        const msg = JSON.stringify({ type: 'subscribe', symbol: symbol });
+        ws.send(msg);
+        logMessage(`Sent subscription request for ${symbol}`);
+        symInput.value = '';
+    } else {
+        logMessage('Cannot subscribe. Server disconnected.');
+    }
+}
 
 function initChart() {
     const ctx = document.getElementById('stockChart').getContext('2d');
@@ -132,7 +150,7 @@ function updateChart(data) {
             const newDataset = {
                 label: symbol,
                 data: [],
-                borderColor: colors[symbol] || '#fff',
+                borderColor: getColorForSymbol(symbol),
                 backgroundColor: 'transparent',
                 borderWidth: 2,
                 tension: 0.4,
@@ -153,5 +171,8 @@ function updateChart(data) {
 
 document.addEventListener('DOMContentLoaded', () => {
     initChart();
+    document.getElementById('newSymbol').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') subscribeStock();
+    });
     connect();
 });

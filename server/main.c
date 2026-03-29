@@ -217,6 +217,20 @@ int main() {
                                         db_log_event("AUTH_FAIL", "Client authentication failed");
                                         remove_client(epoll_fd, client_fd);
                                     }
+                                } else {
+                                    if (strstr(payload, "\"type\":\"subscribe\"")) {
+                                        char *sym_start = strstr(payload, "\"symbol\":\"");
+                                        if (sym_start) {
+                                            sym_start += 10;
+                                            char *sym_end = strchr(sym_start, '"');
+                                            if (sym_end && (sym_end - sym_start < 32)) {
+                                                char symbol[32] = {0};
+                                                strncpy(symbol, sym_start, sym_end - sym_start);
+                                                printf("Client %d subscribed to: %s\n", client_fd, symbol);
+                                                add_stock(symbol);
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         } else if (r <= 0) {

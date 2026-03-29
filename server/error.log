@@ -1,0 +1,4 @@
+main.c:6:10: fatal error: sys/epoll.h: No such file or directory
+    6 | #include <sys/epoll.h>
+      |          ^~~~~~~~~~~~~
+compilation terminated.
