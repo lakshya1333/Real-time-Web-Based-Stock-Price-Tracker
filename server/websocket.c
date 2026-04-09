@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <openssl/evp.h>
 #include <openssl/sha.h>
 
@@ -69,8 +70,10 @@ int ws_read_frame(SSL *ssl, char *out_payload, size_t *out_len, int *out_opcode)
     } else if (payload_len == 127) {
         unsigned char extended[8];
         if (SSL_read(ssl, extended, 8) <= 0) return -1;
-        // Truncating large payloads for this simple server
-        payload_len = (extended[6] << 8) | extended[7]; 
+        // Read all 8 bytes of 64-bit length, capped for safety
+        uint64_t big_len = 0;
+        for (int k = 0; k < 8; k++) big_len = (big_len << 8) | extended[k];
+        payload_len = (int)(big_len > 65535 ? 65535 : big_len);
     }
     
     unsigned char masking_key[4];
@@ -83,7 +86,13 @@ int ws_read_frame(SSL *ssl, char *out_payload, size_t *out_len, int *out_opcode)
     int payload_read = 0;
     while (payload_read < payload_len) {
         int r = SSL_read(ssl, out_payload + payload_read, payload_len - payload_read);
-        if (r <= 0) return r;
+        if (r <= 0) {
+            int ssl_err = SSL_get_error(ssl, r);
+            if (ssl_err == SSL_ERROR_WANT_READ || ssl_err == SSL_ERROR_WANT_WRITE) {
+                continue; // Non-blocking: retry
+            }
+            return r; // Real error or peer closed
+        }
         payload_read += r;
     }
     *out_len = payload_read;
